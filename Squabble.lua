@@ -1,12 +1,6 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local Window = Rayfield:CreateWindow({
-   Name = "Atton'un Atölyesi | Squabble Pro",
-   LoadingTitle = "Sistem Bağlanıyor...",
-   LoadingSubtitle = "by Joker",
-   KeySystem = false
-})
-
+local Window = Rayfield:CreateWindow({Name = "Atton'un Atölyesi | Saf Yerel", KeySystem = false})
 local Tab = Window:CreateTab("Ekonomi", 4483362458)
 
 local ParaMiktari = 0
@@ -17,24 +11,28 @@ Tab:CreateInput({
 })
 
 Tab:CreateButton({
-   Name = "Parayı (Won) Yükle",
+   Name = "Yerel Olarak Güncelle",
    Callback = function()
-      -- Bu kod, oyunun içindeki tüm 'Remote' nesnelerini tarar
-      -- Squabble RP gibi oyunlarda para genelde 'UpdateMoney' veya 'GiveMoney' isimli bir Event ile verilir
-      local basarili = false
+      -- Sunucuyla bağlantı kuran hiçbir fonksiyon (FireServer vb.) yok!
+      -- Sadece yerel oyuncu verisini hedefliyoruz.
+      local player = game.Players.LocalPlayer
+      local bulundu = false
       
-      for _, v in pairs(game:GetDescendants()) do
-          if v:IsA("RemoteEvent") and (v.Name:lower():find("money") or v.Name:lower():find("won") or v.Name:lower():find("add")) then
-              -- Burası sunucuya "bana bu kadar para ver" isteğini gönderir
-              v:FireServer(ParaMiktari) 
-              basarili = true
+      -- Oyuncunun içindeki tüm değerleri tara
+      for _, obj in pairs(player:GetDescendants()) do
+          if obj:IsA("NumberValue") or obj:IsA("IntValue") then
+              -- Buradaki isimleri senin oyununda hangisi varsa onunla eşleştirecek
+              if obj.Name == "Won" or obj.Name == "Money" or obj.Name == "Cash" then
+                  obj.Value = ParaMiktari
+                  bulundu = true
+              end
           end
       end
       
-      if basarili then
-          Rayfield:Notify({Title = "İşlem", Content = "İstek sunucuya gönderildi!", Duration = 5})
+      if bulundu then
+          Rayfield:Notify({Title = "İşlem Tamam", Content = "Yerel değer güncellendi.", Duration = 3})
       else
-          Rayfield:Notify({Title = "Hata", Content = "Tetikleyici (Remote) bulunamadı!", Duration = 5})
+          Rayfield:Notify({Title = "Hata", Content = "Yerel bir 'Won' veya 'Money' verisi bulunamadı.", Duration = 3})
       end
    end,
 })
